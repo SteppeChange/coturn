@@ -1823,6 +1823,10 @@ void setup_server(void)
 	/* udp address listener thread(s) will start later */
 	barrier_count = turn_params.general_relay_servers_number+authserver_number+1+1;
 
+	TURN_LOG_FUNC(TURN_LOG_LEVEL_INFO, "Thread model:\n cpus: %d, relay_servers_number: %d, authserver_number: %d, 1 admin thread,  1 main listener thread\n",
+								turn_params.cpus, turn_params.general_relay_servers_number, authserver_number);
+
+
 #endif
 
 	setup_listener();

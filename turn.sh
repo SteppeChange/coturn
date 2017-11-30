@@ -10,6 +10,7 @@ export OPTIMAL_THREADS=0
 export DATADOG_AGENT_ADDRESS="127.0.0.1"
 export DATADOG_PORT=8125
 export CALLS_LIMIT=100
+export CPUS=2
 
 ./bin/turnserver -c ./etc/turnserver.conf
 

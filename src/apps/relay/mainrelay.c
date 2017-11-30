@@ -149,11 +149,12 @@ TURN_CREDENTIALS_NONE, /* ct */
 ///////////// Users DB //////////////
 { (TURN_USERDB_TYPE)0, {"\0"}, {0,NULL, {NULL,0}} },
 ///////////// CPUs //////////////////
-DEFAULT_CPUS_NUMBER,
+0, // cpus
 //// DATADOG
 "127.0.0.1", // datadog_ip
 8125, // datadog_port
 0 // calls_limit
+
 };
 
 //////////////// OpenSSL Init //////////////////////
@@ -756,7 +757,8 @@ enum EXTRA_OPTS {
 	PROD_OPT,
 	DD_IP,
 	DD_PORT,
-	CALLS_LIMIT
+	CALLS_LIMIT,
+  CPUS
 };
 
 struct myoption {
@@ -880,6 +882,7 @@ static const struct myoption long_options[] = {
 				{ "datadog-ip", required_argument, NULL, DD_IP },
 				{ "datadog-port", required_argument, NULL, DD_PORT },
 				{ "calls-limit", optional_argument, NULL, CALLS_LIMIT },
+        { "cpus", optional_argument, NULL, CPUS },
 				{ NULL, no_argument, NULL, 0 }
 };
 
@@ -1001,6 +1004,9 @@ static void set_option(int c, char *value)
 	case DD_PORT: // datadog-port
 			turn_params.datadog_port = atoi(value);
 			break;
+  case CPUS: // cpus
+      turn_params.cpus = atoi(value);
+      break;
 	case SERVER_NAME_OPT:
 	  	STRCPY(turn_params.oauth_server_name,value);
 	  	break;
@@ -1971,21 +1977,6 @@ int main(int argc, char **argv)
 	turn_params.no_dtls = 1;
 #endif
 
-#if defined(_SC_NPROCESSORS_ONLN)
-
-	{
-		 turn_params.cpus = (long)sysconf(_SC_NPROCESSORS_CONF);
-
-		 if(turn_params.cpus<DEFAULT_CPUS_NUMBER)
-			 turn_params.cpus = DEFAULT_CPUS_NUMBER;
-		 else if(turn_params.cpus>MAX_NUMBER_OF_GENERAL_RELAY_SERVERS)
-			 turn_params.cpus = MAX_NUMBER_OF_GENERAL_RELAY_SERVERS;
-
-		 turn_params.general_relay_servers_number = (turnserver_id)turn_params.cpus;
-	}
-
-#endif
-
 	ns_bzero(&turn_params.default_users_db,sizeof(default_users_db_t));
 	turn_params.default_users_db.ram_db.static_accounts = ur_string_map_create(turn_free_simple);
 
@@ -2009,6 +2000,30 @@ int main(int argc, char **argv)
 	}
 
 	read_config_file(argc,argv,1);
+
+
+#if defined(_SC_NPROCESSORS_ONLN)
+
+    {
+	   if(turn_params.cpus == 0)
+	   {
+		    turn_params.cpus = (long)sysconf(_SC_NPROCESSORS_CONF);
+		    TURN_LOG_FUNC(TURN_LOG_LEVEL_INFO, "System CPUs: %d\n", turn_params.cpus);
+		 }
+		 else
+		    TURN_LOG_FUNC(TURN_LOG_LEVEL_INFO, "Use custom CPUs number: %d\n", turn_params.cpus);
+
+
+		 if(turn_params.cpus<DEFAULT_CPUS_NUMBER)
+			 turn_params.cpus = DEFAULT_CPUS_NUMBER;
+		 else if(turn_params.cpus>MAX_NUMBER_OF_GENERAL_RELAY_SERVERS)
+			 turn_params.cpus = MAX_NUMBER_OF_GENERAL_RELAY_SERVERS;
+
+		 turn_params.general_relay_servers_number = (turnserver_id)turn_params.cpus;
+
+	}
+
+#endif
 
 	if(!get_realm(NULL)->options.name[0]) {
 		STRCPY(get_realm(NULL)->options.name,turn_params.domain);
