@@ -471,8 +471,8 @@ static int print_session(ur_map_key_type key, ur_map_value_type value, void *arg
 			}
 			csarg->user_counters[(size_t)value] += 1;
 
-      if (adminserver.etcd_sess && turn_params.calls_limit < csarg->user_counters[(size_t)value])
-        delete_etcd_registration();
+//      if (adminserver.etcd_sess && turn_params.calls_limit!=0 && turn_params.calls_limit < csarg->user_counters[(size_t)value])
+//        delete_etcd_registration();
 
     } else {
 			if(csarg->username[0]) {
