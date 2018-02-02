@@ -1311,8 +1311,8 @@ void setup_admin_thread(void)
 		char tag[128] = "zone:";
 		strcat(tag, (char*)turn_params.zone_code);
 		TURN_LOG_FUNC(TURN_LOG_LEVEL_INFO,"datadog connection ip: %s, port: %d, tag: %s\n", turn_params.datadog_ip, turn_params.datadog_port, tag);
-    adminserver.datadog = dd_allocate(turn_params.datadog_ip, turn_params.datadog_port, tag);
-    //  we dont need to close it?  dd_free(adminserver.datadog);
+		adminserver.datadog = dd_allocate(turn_params.datadog_ip, turn_params.datadog_port, tag);
+    	//  we dont need to close it?  dd_free(adminserver.datadog);
   }
 
   /// check calls_limits
@@ -3755,7 +3755,7 @@ static void print_statistics(void)
 			char json[1024];
 
 			addr_to_string(turn_params.external_ip, (u08bits*)ip);
-			snprintf(key, sizeof(key), "/config/turn/running/%s", ip);
+			snprintf(key, sizeof(key), "/config/turn_%s/running/%s", turn_params.content_type, ip);
 			snprintf(url, sizeof(url), "turn:%s:%d", ip, turn_params.listener_port);
 			snprintf(json, sizeof(json), "{ \"url\":\"%s\", \"active_calls\":%d, \"zone\":\"%s\" }", url, active_users, turn_params.zone_code);
 

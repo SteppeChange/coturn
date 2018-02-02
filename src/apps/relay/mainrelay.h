@@ -318,6 +318,9 @@ typedef struct _turn_params_ {
 		/// LIMIT calls
 	unsigned int calls_limit;
 
+    ////  CONTENT_TYPE
+    char content_type[128];
+    
 } turn_params_t;
 
 extern turn_params_t turn_params;

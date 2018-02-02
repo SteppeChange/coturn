@@ -153,8 +153,8 @@ TURN_CREDENTIALS_NONE, /* ct */
 //// DATADOG
 "127.0.0.1", // datadog_ip
 8125, // datadog_port
-0 // calls_limit
-
+0, // calls_limit
+ "audio" // content_type
 };
 
 //////////////// OpenSSL Init //////////////////////
@@ -758,7 +758,8 @@ enum EXTRA_OPTS {
 	DD_IP,
 	DD_PORT,
 	CALLS_LIMIT,
-  CPUS
+  	CPUS,
+	CONTENT_TYPE
 };
 
 struct myoption {
@@ -882,7 +883,8 @@ static const struct myoption long_options[] = {
 				{ "datadog-ip", required_argument, NULL, DD_IP },
 				{ "datadog-port", required_argument, NULL, DD_PORT },
 				{ "calls-limit", optional_argument, NULL, CALLS_LIMIT },
-        { "cpus", optional_argument, NULL, CPUS },
+        		{ "cpus", optional_argument, NULL, CPUS },
+        		{ "content-type", required_argument, NULL, CONTENT_TYPE },
 				{ NULL, no_argument, NULL, 0 }
 };
 
@@ -999,14 +1001,17 @@ static void set_option(int c, char *value)
 	  	STRCPY(turn_params.datadog_ip, value);
 		break;
 	case CALLS_LIMIT: // calls-limit
-			turn_params.calls_limit = atoi(value);
-			break;
+		turn_params.calls_limit = atoi(value);
+		break;
 	case DD_PORT: // datadog-port
-			turn_params.datadog_port = atoi(value);
-			break;
-  case CPUS: // cpus
-      turn_params.cpus = atoi(value);
+		turn_params.datadog_port = atoi(value);
+		break;
+    case CPUS: // cpus
+        turn_params.cpus = atoi(value);
       break;
+    case CONTENT_TYPE: // content-type
+          STRCPY(turn_params.content_type, value);
+          break;
 	case SERVER_NAME_OPT:
 	  	STRCPY(turn_params.oauth_server_name,value);
 	  	break;
